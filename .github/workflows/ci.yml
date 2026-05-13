@@ -35,10 +35,10 @@ jobs:
         run: ls -R src/test/resources
 
       - name: Run functional tests
-        run: ./gradlew test --stacktrace
+        run: ./gradlew apiTest -Ptags=@smokes
 
       - name: Run performance tests
-        run: ./gradlew performanceTest
+        run: ./gradlew performanceTest -Ptags=@perf
 
       - name: Upload Gatling Reports
         uses: actions/upload-artifact@v4
