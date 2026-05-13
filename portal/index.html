@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>FWKarate2xx QA Portal</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: linear-gradient(135deg, #020617 0%, #0f172a 50%, #111827 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 60px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 60px;
+        }
+
+        .title {
+            font-size: 42px;
+            font-weight: bold;
+        }
+
+        .subtitle {
+            margin-top: 10px;
+            color: #94a3b8;
+            font-size: 16px;
+        }
+
+        .status {
+            padding: 12px 20px;
+            border-radius: 999px;
+            background: rgba(34, 197, 94, 0.15);
+            border: 1px solid rgba(34, 197, 94, 0.4);
+            color: #4ade80;
+            font-size: 14px;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .metric {
+            background: rgba(15, 23, 42, 0.75);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(12px);
+            border-radius: 24px;
+            padding: 28px;
+            transition: 0.3s;
+        }
+
+        .metric:hover {
+            transform: translateY(-4px);
+        }
+
+        .metric-title {
+            color: #94a3b8;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        .metric-value {
+            font-size: 36px;
+            font-weight: bold;
+        }
+
+        .reports {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+        }
+
+        .card {
+            background: rgba(15, 23, 42, 0.75);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 28px;
+            padding: 40px;
+            text-decoration: none;
+            color: white;
+            transition: 0.3s;
+            backdrop-filter: blur(12px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(59, 130, 246, 0.6);
+            box-shadow: 0 20px 60px rgba(59, 130, 246, 0.15);
+        }
+
+        .card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #3b82f6, #22c55e);
+        }
+
+        .card-title {
+            font-size: 30px;
+            margin-bottom: 15px;
+        }
+
+        .card-description {
+            color: #94a3b8;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            color: #cbd5e1;
+            font-size: 14px;
+        }
+
+        .badge {
+            padding: 8px 14px;
+            border-radius: 999px;
+            background: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+            font-size: 12px;
+        }
+
+        .footer {
+            margin-top: 80px;
+            text-align: center;
+            color: #64748b;
+            font-size: 14px;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+
+        <div>
+            <div class="title">FWKarate2xx QA Portal</div>
+            <div class="subtitle">
+                Functional and performance testing dashboard
+            </div>
+        </div>
+
+        <div class="status">
+            ● Pipeline Operational
+        </div>
+
+    </div>
+
+    <div class="dashboard">
+
+        <div class="metric">
+            <div class="metric-title">Environment</div>
+            <div class="metric-value">QA</div>
+        </div>
+
+        <div class="metric">
+            <div class="metric-title">Framework</div>
+            <div class="metric-value">Karate</div>
+        </div>
+
+        <div class="metric">
+            <div class="metric-title">Performance</div>
+            <div class="metric-value">Gatling</div>
+        </div>
+
+        <div class="metric">
+            <div class="metric-title">CI/CD</div>
+            <div class="metric-value">GitHub</div>
+        </div>
+
+    </div>
+
+    <div class="reports">
+
+        <a class="card" href="./karate/">
+
+            <div class="card-title">Karate Reports</div>
+
+            <div class="card-description">
+                Access functional API execution reports, scenarios, validations, and execution evidence.
+            </div>
+
+            <div class="card-footer">
+                <span>Functional Testing</span>
+                <span class="badge">OPEN</span>
+            </div>
+
+        </a>
+
+        <a class="card" href="./gatling/">
+
+            <div class="card-title">Gatling Reports</div>
+
+            <div class="card-description">
+                Review performance metrics, response times, throughput, and load testing analytics.
+            </div>
+
+            <div class="card-footer">
+                <span>Performance Testing</span>
+                <span class="badge">OPEN</span>
+            </div>
+
+        </a>
+
+    </div>
+
+    <div class="footer">
+        FWKarate2xx • QA Automation Platform
+    </div>
+
+</div>
+
+</body>
+
+</html>
