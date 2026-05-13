@@ -5,7 +5,7 @@ Feature: Get Post
 
   @perf_single_row
   Scenario: GET post
-
+    * java.lang.System.setProperty('feeder.file', 'ruts.csv')
     * def performance =
       """
       {
@@ -28,6 +28,7 @@ Feature: Get Post
 
   @perf_multiple_rows
   Scenario: GET user
+    * java.lang.System.setProperty('feeder.file', 'usuarios.csv')
     * def performance =
       """
       {
@@ -56,6 +57,7 @@ Feature: Get Post
 
   @perf_dynamic_flow
   Scenario: User flow
+    * java.lang.System.setProperty('feeder.file', 'usuarios.csv')
     * def performance =
       """
       {
@@ -85,7 +87,7 @@ Feature: Get Post
 
   @perf_dynamic_post
   Scenario: Create post
-
+    * java.lang.System.setProperty('feeder.file', 'usuarios.csv')
     * def performance =
       """
       {
