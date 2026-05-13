@@ -79,7 +79,7 @@ jobs:
   deploy-reports:
 
     needs:
-      - functional-tests
+      - performance-tests
 
     runs-on: ubuntu-latest
 
