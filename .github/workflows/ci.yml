@@ -29,8 +29,11 @@ jobs:
       - name: Grant execute permission
         run: chmod +x gradlew
 
+      - name: Show resources
+        run: ls -R src/test/resources
+
       - name: Run functional tests
-        run: ./gradlew test
+        run: ./gradlew test --stacktrace
 
       - name: Upload Karate Reports
         uses: actions/upload-artifact@v4
