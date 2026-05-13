@@ -4,12 +4,16 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Random;
-import java.util.LinkedHashMap;
 
 public class CsvUtils {
+
     private static int sequentialIndex = 1;
+
+    private static final String FEEDERS_PATH =
+            "performance/feeders/";
 
     public static String getRandomValue(
             String fileName,
@@ -18,76 +22,39 @@ public class CsvUtils {
 
         try {
 
-            InputStream inputStream =
-                    CsvUtils.class
-                            .getClassLoader()
-                            .getResourceAsStream(
-                                    "performance/feeders/" + fileName
-                            );
+            List<String> lines =
+                    readCsv(fileName);
 
-            if (inputStream == null) {
+            String[] columns =
+                    lines.get(0).split(",");
 
-                throw new RuntimeException(
-                        "CSV not found: " + fileName
-                );
-            }
-
-            BufferedReader reader =
-                    new BufferedReader(
-                            new InputStreamReader(inputStream)
+            int columnIndex =
+                    getColumnIndex(
+                            columns,
+                            columnName
                     );
 
-            List<String> lines = new ArrayList<>();
-
-            String line;
-
-            while ((line = reader.readLine()) != null) {
-
-                lines.add(line);
-            }
-
-            if (lines.isEmpty()) {
-
-                throw new RuntimeException(
-                        "CSV is empty: " + fileName
-                );
-            }
-
-            String header = lines.get(0);
-
-            String[] columns = header.split(",");
-
-            int columnIndex = -1;
-
-            for (int i = 0; i < columns.length; i++) {
-
-                if (columns[i].trim().equals(columnName)) {
-
-                    columnIndex = i;
-                    break;
-                }
-            }
-
-            if (columnIndex == -1) {
-
-                throw new RuntimeException(
-                        "Column not found: " + columnName
-                );
-            }
-
-            Random random = new Random();
+            Random random =
+                    new Random();
 
             int randomLine =
-                    1 + random.nextInt(lines.size() - 1);
+                    1 + random.nextInt(
+                            lines.size() - 1
+                    );
 
             String[] values =
-                    lines.get(randomLine).split(",");
+                    lines.get(randomLine)
+                            .split(",");
 
-            return values[columnIndex].trim();
+            if (columnIndex >= values.length) {
+
+                return "";
+            }
+
+            return values[columnIndex]
+                    .trim();
 
         } catch (Exception e) {
-
-            e.printStackTrace();
 
             throw new RuntimeException(e);
         }
@@ -100,65 +67,17 @@ public class CsvUtils {
 
         try {
 
-            InputStream inputStream =
-                    CsvUtils.class
-                            .getClassLoader()
-                            .getResourceAsStream(
-                                    "performance/feeders/" +
-                                            fileName
-                            );
-
-            if (inputStream == null) {
-
-                throw new RuntimeException(
-                        "CSV not found: " + fileName
-                );
-            }
-
-            BufferedReader reader =
-                    new BufferedReader(
-                            new InputStreamReader(
-                                    inputStream
-                            )
-                    );
-
             List<String> lines =
-                    new ArrayList<>();
-
-            String line;
-
-            while ((line = reader.readLine()) != null) {
-
-                lines.add(line);
-            }
-
-            String header = lines.get(0);
+                    readCsv(fileName);
 
             String[] columns =
-                    header.split(",");
+                    lines.get(0).split(",");
 
-            int columnIndex = -1;
-
-            for (int i = 0; i < columns.length; i++) {
-
-                if (
-                        columns[i]
-                                .trim()
-                                .equals(columnName)
-                ) {
-
-                    columnIndex = i;
-                    break;
-                }
-            }
-
-            if (columnIndex == -1) {
-
-                throw new RuntimeException(
-                        "Column not found: " +
-                                columnName
-                );
-            }
+            int columnIndex =
+                    getColumnIndex(
+                            columns,
+                            columnName
+                    );
 
             if (sequentialIndex >= lines.size()) {
 
@@ -170,6 +89,11 @@ public class CsvUtils {
                             .split(",");
 
             sequentialIndex++;
+
+            if (columnIndex >= values.length) {
+
+                return "";
+            }
 
             return values[columnIndex]
                     .trim();
@@ -221,18 +145,88 @@ public class CsvUtils {
 
         try {
 
+            List<String> lines =
+                    readCsv(feederFile);
+
+            String[] headers =
+                    lines.get(0)
+                            .split(",");
+
+            int rowIndex;
+
+            switch (strategy.toLowerCase()) {
+
+                case "sequential":
+
+                    if (sequentialIndex >= lines.size()) {
+
+                        sequentialIndex = 1;
+                    }
+
+                    rowIndex = sequentialIndex;
+
+                    sequentialIndex++;
+
+                    break;
+
+                case "random":
+
+                default:
+
+                    Random random =
+                            new Random();
+
+                    rowIndex =
+                            1 + random.nextInt(
+                                    lines.size() - 1
+                            );
+            }
+
+            String[] values =
+                    lines.get(rowIndex)
+                            .split(",");
+
+            LinkedHashMap<String, Object> row =
+                    new LinkedHashMap<>();
+
+            for (int i = 0; i < headers.length; i++) {
+
+                String value =
+                        i < values.length
+                                ? values[i].trim()
+                                : "";
+
+                row.put(
+                        headers[i].trim(),
+                        value
+                );
+            }
+
+            return row;
+
+        } catch (Exception e) {
+
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static List<String> readCsv(
+            String fileName
+    ) {
+
+        try {
+
             InputStream inputStream =
                     CsvUtils.class
                             .getClassLoader()
                             .getResourceAsStream(
-                                    "performance/feeders/" +
-                                            feederFile
+                                    FEEDERS_PATH + fileName
                             );
 
             if (inputStream == null) {
 
                 throw new RuntimeException(
-                        "CSV not found: " + feederFile
+                        "CSV not found: " + fileName
                 );
             }
 
@@ -250,60 +244,55 @@ public class CsvUtils {
 
             while ((line = reader.readLine()) != null) {
 
-                lines.add(line);
+                if (!line.trim().isEmpty()) {
+
+                    lines.add(line);
+                }
             }
 
-            String[] headers =
-                    lines.get(0).split(",");
+            if (lines.isEmpty()) {
 
-            int rowIndex;
-
-            switch (strategy.toLowerCase()) {
-
-                case "sequential":
-
-                    if (sequentialIndex >= lines.size()) {
-
-                        sequentialIndex = 1;
-                    }
-
-                    rowIndex = sequentialIndex;
-                    sequentialIndex++;
-
-                    break;
-
-                case "random":
-
-                default:
-
-                    Random random = new Random();
-
-                    rowIndex =
-                            1 + random.nextInt(
-                                    lines.size() - 1
-                            );
-            }
-
-            String[] values =
-                    lines.get(rowIndex)
-                            .split(",");
-
-            LinkedHashMap<String, Object> row =
-                    new LinkedHashMap<>();
-
-            for (int i = 0; i < headers.length; i++) {
-
-                row.put(
-                        headers[i].trim(),
-                        values[i].trim()
+                throw new RuntimeException(
+                        "CSV is empty: " + fileName
                 );
             }
 
-            return row;
+            if (lines.size() <= 1) {
+
+                throw new RuntimeException(
+                        "CSV has no data rows: "
+                                + fileName
+                );
+            }
+
+            return lines;
 
         } catch (Exception e) {
 
             throw new RuntimeException(e);
         }
+    }
+
+    private static int getColumnIndex(
+            String[] columns,
+            String columnName
+    ) {
+
+        for (int i = 0; i < columns.length; i++) {
+
+            if (
+                    columns[i]
+                            .trim()
+                            .equals(columnName)
+            ) {
+
+                return i;
+            }
+        }
+
+        throw new RuntimeException(
+                "Column not found: "
+                        + columnName
+        );
     }
 }
