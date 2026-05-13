@@ -190,6 +190,76 @@ jobs:
       # =====================================================
       # Upload Pages Artifact
       # =====================================================
+      - name: Create QA Portal
+        run: |
+
+          cat <<EOF > site/index.html
+          <!DOCTYPE html>
+          <html>
+
+          <head>
+
+            <title>FWKarate2xx QA Portal</title>
+
+            <style>
+
+              body {
+                background: #0f172a;
+                color: white;
+                font-family: Arial;
+                text-align: center;
+                padding-top: 100px;
+              }
+
+              h1 {
+                margin-bottom: 50px;
+              }
+
+              .card {
+                display: inline-block;
+                width: 250px;
+                margin: 20px;
+                padding: 30px;
+                border-radius: 15px;
+                background: #1e293b;
+                text-decoration: none;
+                color: white;
+                transition: 0.3s;
+              }
+
+              .card:hover {
+                transform: scale(1.05);
+              }
+
+            </style>
+
+          </head>
+
+          <body>
+
+            <h1>FWKarate2xx QA Portal</h1>
+
+            <a class="card" href="./karate/">
+
+              <h2>Karate Reports</h2>
+
+              <p>Functional API Testing</p>
+
+            </a>
+
+            <a class="card" href="./gatling/">
+
+              <h2>Gatling Reports</h2>
+
+              <p>Performance Testing</p>
+
+            </a>
+
+          </body>
+
+          </html>
+          EOF
+
 
       - name: Upload GitHub Pages Artifact
         uses: actions/upload-pages-artifact@v3
