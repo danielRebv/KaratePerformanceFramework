@@ -3,9 +3,6 @@ name: FWKarate2xx CI
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
-  # 👇 Controla si quieres ejecutar Gatling
-  RUN_PERFORMANCE: false
-
 on:
 
   push:
@@ -15,6 +12,16 @@ on:
   pull_request:
     branches:
       - master
+
+
+  workflow_dispatch:
+
+    inputs:
+
+      run_performance:
+        description: 'Run performance tests'
+        required: true
+        default: 'false'
 
 permissions:
   contents: read
@@ -78,14 +85,14 @@ jobs:
       - name: Grant execute permission
         run: chmod +x gradlew
 
-      # 👇 Solo ejecuta Gatling si RUN_PERFORMANCE=true
+
       - name: Run performance tests
-        if: env.RUN_PERFORMANCE == 'true'
+        if: github.event.inputs.run_performance == 'true'
         run: ./gradlew performanceTest -Ptags=@perf
 
-      # 👇 Prepara reporte limpio para Pages
+
       - name: Prepare Gatling Site
-        if: env.RUN_PERFORMANCE == 'true'
+        if: github.event.inputs.run_performance == 'true'
         run: |
 
           mkdir -p build/gatling-site
@@ -94,17 +101,17 @@ jobs:
 
           cp -r "$latest"/* build/gatling-site/
 
-      # 👇 Upload report Gatling
+
       - name: Upload Gatling Reports
-        if: env.RUN_PERFORMANCE == 'true'
+        if: github.event.inputs.run_performance == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: gatling-report
           path: build/gatling-site
 
-      # 👇 Mensaje bonito si está deshabilitado
+
       - name: Skip performance tests
-        if: env.RUN_PERFORMANCE == 'false'
+        if: github.event.inputs.run_performance != 'true'
         run: |
           echo "Performance tests disabled"
 
@@ -140,14 +147,14 @@ jobs:
       # =====================================================
 
       - name: Download Gatling Reports
-        if: env.RUN_PERFORMANCE == 'true'
+        if: github.event.inputs.run_performance == 'true'
         uses: actions/download-artifact@v4
         with:
           name: gatling-report
           path: site/gatling
 
       # =====================================================
-      # Upload GitHub Pages
+      # Upload GitHub Pages Artifact
       # =====================================================
 
       - name: Upload GitHub Pages Artifact
@@ -156,7 +163,7 @@ jobs:
           path: site
 
       # =====================================================
-      # Deploy
+      # Deploy Pages
       # =====================================================
 
       - name: Deploy to GitHub Pages
