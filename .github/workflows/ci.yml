@@ -70,11 +70,17 @@ jobs:
       - name: Run performance tests
         run: ./gradlew performanceTest -Ptags=@perf
 
+      - name: Prepare Gatling Site
+        run: |
+            mkdir -p build/gatling-site
+            latest=$(ls -td build/reports/gatling/* | head -1)
+            cp -r "$latest"/* build/gatling-site/
+
       - name: Upload Gatling Reports
         uses: actions/upload-artifact@v4
         with:
-          name: gatling-report
-          path: build/reports/gatling
+            name: gatling-report
+            path: build/gatling-site
 
   deploy-reports:
 
