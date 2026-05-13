@@ -5,7 +5,7 @@ Feature: Accounts
 
 
   Scenario: Get Account Balance
-    Given path 'users/2'
+    Given path 'users/1'
     When method GET
     Then status 200
 
