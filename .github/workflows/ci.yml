@@ -89,17 +89,27 @@ jobs:
 
     steps:
 
+      # Karate
       - name: Download Karate Reports
         uses: actions/download-artifact@v4
         with:
           name: karate-reports
-          path: karate-reports
+          path: site/karate
 
+      # Gatling
+      - name: Download Gatling Reports
+        uses: actions/download-artifact@v4
+        with:
+          name: gatling-report
+          path: site/gatling
+
+      # Upload unified site
       - name: Upload GitHub Pages Artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: karate-reports
+          path: site
 
+      # Deploy
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
