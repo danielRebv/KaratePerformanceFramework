@@ -37,6 +37,15 @@ jobs:
       - name: Run functional tests
         run: ./gradlew test --stacktrace
 
+      - name: Run performance tests
+        run: ./gradlew performanceTest
+
+      - name: Upload Gatling Reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: gatling-report
+          path: build/reports/gatling
+
       - name: Upload Karate Reports
         uses: actions/upload-artifact@v4
         with:
