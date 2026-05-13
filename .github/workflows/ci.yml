@@ -3,6 +3,9 @@ name: FWKarate2xx CI
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
+  # 👇 Controla si quieres ejecutar Gatling
+  RUN_PERFORMANCE: false
+
 on:
 
   push:
@@ -19,6 +22,10 @@ permissions:
   id-token: write
 
 jobs:
+
+  # =========================================================
+  # FUNCTIONAL TESTS
+  # =========================================================
 
   functional-tests:
 
@@ -47,6 +54,10 @@ jobs:
           name: karate-reports
           path: build/karate-reports
 
+  # =========================================================
+  # PERFORMANCE TESTS
+  # =========================================================
+
   performance-tests:
 
     needs: functional-tests
@@ -67,29 +78,14 @@ jobs:
       - name: Grant execute permission
         run: chmod +x gradlew
 
-      # 👇 Detectar simulations
-      - name: Check performance simulations
-        id: perfcheck
-        run: |
-
-          count=$(find src/test/java -name "*Simulation.java" | wc -l)
-
-          echo "Found simulations: $count"
-
-          if [ "$count" -eq "0" ]; then
-            echo "exists=false" >> $GITHUB_OUTPUT
-          else
-            echo "exists=true" >> $GITHUB_OUTPUT
-          fi
-
-
+      # 👇 Solo ejecuta Gatling si RUN_PERFORMANCE=true
       - name: Run performance tests
-        if: steps.perfcheck.outputs.exists == 'true'
+        if: env.RUN_PERFORMANCE == 'true'
         run: ./gradlew performanceTest -Ptags=@perf
 
-
+      # 👇 Prepara reporte limpio para Pages
       - name: Prepare Gatling Site
-        if: steps.perfcheck.outputs.exists == 'true'
+        if: env.RUN_PERFORMANCE == 'true'
         run: |
 
           mkdir -p build/gatling-site
@@ -98,19 +94,23 @@ jobs:
 
           cp -r "$latest"/* build/gatling-site/
 
-
+      # 👇 Upload report Gatling
       - name: Upload Gatling Reports
-        if: steps.perfcheck.outputs.exists == 'true'
+        if: env.RUN_PERFORMANCE == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: gatling-report
           path: build/gatling-site
 
-      #
+      # 👇 Mensaje bonito si está deshabilitado
       - name: Skip performance tests
-        if: steps.perfcheck.outputs.exists == 'false'
+        if: env.RUN_PERFORMANCE == 'false'
         run: |
-          echo "No Gatling simulations found"
+          echo "Performance tests disabled"
+
+  # =========================================================
+  # DEPLOY REPORTS
+  # =========================================================
 
   deploy-reports:
 
@@ -125,6 +125,9 @@ jobs:
 
     steps:
 
+      # =====================================================
+      # Karate Reports
+      # =====================================================
 
       - name: Download Karate Reports
         uses: actions/download-artifact@v4
@@ -132,19 +135,29 @@ jobs:
           name: karate-reports
           path: site/karate
 
+      # =====================================================
+      # Gatling Reports
+      # =====================================================
 
       - name: Download Gatling Reports
+        if: env.RUN_PERFORMANCE == 'true'
         uses: actions/download-artifact@v4
         with:
           name: gatling-report
           path: site/gatling
 
+      # =====================================================
+      # Upload GitHub Pages
+      # =====================================================
 
       - name: Upload GitHub Pages Artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: site
 
+      # =====================================================
+      # Deploy
+      # =====================================================
 
       - name: Deploy to GitHub Pages
         id: deployment
