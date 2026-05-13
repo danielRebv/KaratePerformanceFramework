@@ -6,7 +6,7 @@ Feature: Accounts
     Given url baseUrl
 
 
-  @regresion
+  @regresion-account
   @tc:balance_001
   Scenario: Get Account Balance
     Given path 'users/a'
