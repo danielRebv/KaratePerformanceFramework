@@ -4,7 +4,7 @@ Feature: Get Post
     Given url baseUrl
 
 
-
+  @perf
   Scenario: GET post
     * java.lang.System.setProperty('feeder.file', 'ruts.csv')
     * def performance =
