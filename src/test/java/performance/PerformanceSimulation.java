@@ -278,60 +278,29 @@ public class PerformanceSimulation extends Simulation {
         }
     }
 
-    private OpenInjectionStep buildInjection(
-            PerformanceConfig config
-    ) {
+    private OpenInjectionStep buildInjection(PerformanceConfig config) {
 
-        String type =
-                config
-                        .getInjection()
-                        .getType();
+        String type = config.getInjection().getType();
 
-        int users =
-                config
-                        .getInjection()
-                        .getUsers();
-
-        int duration =
-                config
-                        .getInjection()
-                        .getDuration();
-
-        int rampUp =
-                config
-                        .getInjection()
-                        .getRampUp();
+        int users = config.getInjection().getUsers();
+        int duration = config.getInjection().getDuration();
+        int rampUp = config.getInjection().getRampUp();
 
         switch (type.toLowerCase()) {
-
             case "ramp":
-
                 return rampUsersPerSec(1)
                         .to(users)
                         .during(rampUp);
-
             case "spike":
-
                 return stressPeakUsers(users)
                         .during(duration);
-
             case "soak":
-
-                return constantUsersPerSec(users)
-                        .during(duration);
-
+                return constantUsersPerSec(users).during(duration);
             case "stress":
-
-                return rampUsersPerSec(1)
-                        .to(users)
-                        .during(duration);
-
+                return rampUsersPerSec(1).to(users).during(duration);
             case "constant":
-
             default:
-
-                return constantUsersPerSec(users)
-                        .during(duration);
+                return constantUsersPerSec(users).during(duration);
         }
     }
 }
