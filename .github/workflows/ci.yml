@@ -71,7 +71,7 @@ jobs:
 
       - name: Run functional tests (manual)
         if: github.event_name == 'workflow_dispatch'
-        run: ./gradlew apiTest -Ptags="${{ github.event.inputs.tags_expression }}"
+        run: ./gradlew apiTest -Ptags="${{ github.event.inputs.tags_expression }}" --info
 
       # =====================================================
       # Upload Karate Reports
