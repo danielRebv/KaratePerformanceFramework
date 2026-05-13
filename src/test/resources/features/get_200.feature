@@ -4,7 +4,7 @@ Feature: Get Post
     Given url baseUrl
 
 
-  @smokes
+  @regresion
   Scenario: GET post
     Given path 'posts/1'
     When method GET

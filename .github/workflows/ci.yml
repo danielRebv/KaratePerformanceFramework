@@ -63,11 +63,12 @@ jobs:
 
       - name: Run functional tests (default)
         if: github.event_name != 'workflow_dispatch'
-        run: ./gradlew apiTest -Ptags="@smoke and not @perf"
+        run: ./gradlew apiTest -Ptags="@regresion" --info
 
       # =====================================================
       # Manual → Dynamic tags
       # =====================================================
+
 
       - name: Run functional tests (manual)
         if: github.event_name == 'workflow_dispatch'
