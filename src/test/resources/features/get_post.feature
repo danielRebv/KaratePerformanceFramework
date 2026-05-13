@@ -3,7 +3,7 @@ Feature: Get Post
   Background:
     Given url baseUrl
 
-  @perf_single_row
+
 
   Scenario: GET post
     * java.lang.System.setProperty('feeder.file', 'ruts.csv')
@@ -27,7 +27,7 @@ Feature: Get Post
     Then status 200
 
 
-  @perf_multiple_rows
+
 
   Scenario: GET user
     * java.lang.System.setProperty('feeder.file', 'usuarios.csv')
@@ -57,7 +57,7 @@ Feature: Get Post
     And match response.name == expectedName
 
 
-  @perf_dynamic_flow
+
 
   Scenario: User flow
     * java.lang.System.setProperty('feeder.file', 'usuarios.csv')
@@ -88,7 +88,6 @@ Feature: Get Post
     When method GET
     Then status 200
 
-  @perf_dynamic_post
 
   Scenario: Create post
     * java.lang.System.setProperty('feeder.file', 'usuarios.csv')
