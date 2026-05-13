@@ -5,14 +5,14 @@ Feature: Accounts
     Given url baseUrl
 
 
-
+  @accounts
   Scenario: Get Account Balance
     Given path 'users/1'
     When method GET
     Then status 200
 
 
-  @smokes
+  @accounts
   Scenario: Get Account Balance Performance
     Given path 'users/1'
     When method GET

@@ -13,10 +13,15 @@ on:
     branches:
       - master
 
-
+  # 👇 Ejecución manual flexible
   workflow_dispatch:
 
     inputs:
+
+      tags_expression:
+        description: 'Karate tags expression'
+        required: true
+        default: '@smoke and not @perf'
 
       run_performance:
         description: 'Run performance tests'
@@ -52,8 +57,25 @@ jobs:
       - name: Grant execute permission
         run: chmod +x gradlew
 
-      - name: Run functional tests
-        run: ./gradlew apiTest -Ptags=@smokes
+      # =====================================================
+      # Push / PR → Smoke default
+      # =====================================================
+
+      - name: Run functional tests (default)
+        if: github.event_name != 'workflow_dispatch'
+        run: ./gradlew apiTest -Ptags="@smoke and not @perf"
+
+      # =====================================================
+      # Manual → Dynamic tags
+      # =====================================================
+
+      - name: Run functional tests (manual)
+        if: github.event_name == 'workflow_dispatch'
+        run: ./gradlew apiTest -Ptags="${{ github.event.inputs.tags_expression }}"
+
+      # =====================================================
+      # Upload Karate Reports
+      # =====================================================
 
       - name: Upload Karate Reports
         uses: actions/upload-artifact@v4
@@ -85,14 +107,20 @@ jobs:
       - name: Grant execute permission
         run: chmod +x gradlew
 
+      # =====================================================
+      # Run performance only manually
+      # =====================================================
 
       - name: Run performance tests
-        if: github.event.inputs.run_performance == 'true'
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.run_performance == 'true'
         run: ./gradlew performanceTest -Ptags=@perf
 
+      # =====================================================
+      # Prepare Gatling Site
+      # =====================================================
 
       - name: Prepare Gatling Site
-        if: github.event.inputs.run_performance == 'true'
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.run_performance == 'true'
         run: |
 
           mkdir -p build/gatling-site
@@ -101,17 +129,23 @@ jobs:
 
           cp -r "$latest"/* build/gatling-site/
 
+      # =====================================================
+      # Upload Gatling Reports
+      # =====================================================
 
       - name: Upload Gatling Reports
-        if: github.event.inputs.run_performance == 'true'
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.run_performance == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: gatling-report
           path: build/gatling-site
 
+      # =====================================================
+      # Skip message
+      # =====================================================
 
       - name: Skip performance tests
-        if: github.event.inputs.run_performance != 'true'
+        if: github.event_name != 'workflow_dispatch' || github.event.inputs.run_performance != 'true'
         run: |
           echo "Performance tests disabled"
 
@@ -147,14 +181,14 @@ jobs:
       # =====================================================
 
       - name: Download Gatling Reports
-        if: github.event.inputs.run_performance == 'true'
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.run_performance == 'true'
         uses: actions/download-artifact@v4
         with:
           name: gatling-report
           path: site/gatling
 
       # =====================================================
-      # Upload GitHub Pages Artifact
+      # Upload Pages Artifact
       # =====================================================
 
       - name: Upload GitHub Pages Artifact
@@ -163,7 +197,7 @@ jobs:
           path: site
 
       # =====================================================
-      # Deploy Pages
+      # Deploy
       # =====================================================
 
       - name: Deploy to GitHub Pages
