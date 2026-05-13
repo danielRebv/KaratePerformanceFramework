@@ -1,0 +1,38 @@
+# Gradle
+.gradle/
+build/
+
+# IntelliJ
+.idea/
+*.iml
+out/
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Reports
+target/
+reports/
+
+# Gatling generated reports
+build/reports/gatling/
+
+# Environment files
+*.env
+
+# Java
+*.class
+
+# Temporary files
+tmp/
+temp/
+
+# Performance generated artifacts
+simulation.log
+
+# Node (por si algún día agregas tooling)
+node_modules/

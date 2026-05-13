@@ -1,0 +1,53 @@
+plugins {
+    id 'java'
+
+}
+
+group = 'org.bice'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testImplementation("io.karatelabs:karate-junit6:2.0.8")
+    testImplementation("io.karatelabs:karate-gatling:2.0.8")
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.17.1'
+    implementation 'com.openhtmltopdf:openhtmltopdf-pdfbox:1.0.10'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+tasks.register('apiTest', Test) {
+    outputs.upToDateWhen { false }
+    description = 'Execute Karate API tests'
+    group = 'verification'
+    useJUnitPlatform()
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+    systemProperty "karate.tags", project.findProperty("tags")
+}
+
+tasks.register('performanceTest', JavaExec) {
+    outputs.upToDateWhen { false }
+    group = 'verification'
+    description = 'Execute Gatling performance tests'
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'io.gatling.app.Gatling'
+    jvmArgs = [
+            '--add-opens=java.base/java.lang=ALL-UNNAMED',
+            "-Dkarate.tags=${project.findProperty("tags")}"
+    ]
+    args = [
+            '--simulation',
+            'performance.PerformanceSimulation',
+            '--results-folder',
+            layout.buildDirectory.dir("reports/gatling").get().asFile.absolutePath
+    ]
+}

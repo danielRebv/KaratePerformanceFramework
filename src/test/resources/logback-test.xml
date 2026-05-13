@@ -1,0 +1,24 @@
+<configuration>
+
+    <appender name="STDOUT"
+              class="ch.qos.logback.core.ConsoleAppender">
+
+        <encoder>
+            <pattern>
+                %d{HH:mm:ss} %-5level %msg%n
+            </pattern>
+        </encoder>
+
+    </appender>
+
+    <logger name="karate.http" level="INFO"/>
+    <logger name="karate.runtime" level="INFO"/>
+
+    <logger name="org.junit.platform.launcher.core.DiscoveryIssueNotifier"
+            level="ERROR"/>
+
+    <root level="WARN">
+        <appender-ref ref="STDOUT"/>
+    </root>
+
+</configuration>
