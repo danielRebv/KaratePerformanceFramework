@@ -67,20 +67,50 @@ jobs:
       - name: Grant execute permission
         run: chmod +x gradlew
 
+      # 👇 Detectar simulations
+      - name: Check performance simulations
+        id: perfcheck
+        run: |
+
+          count=$(find src/test/java -name "*Simulation.java" | wc -l)
+
+          echo "Found simulations: $count"
+
+          if [ "$count" -eq "0" ]; then
+            echo "exists=false" >> $GITHUB_OUTPUT
+          else
+            echo "exists=true" >> $GITHUB_OUTPUT
+          fi
+
+
       - name: Run performance tests
+        if: steps.perfcheck.outputs.exists == 'true'
         run: ./gradlew performanceTest -Ptags=@perf
 
+
       - name: Prepare Gatling Site
+        if: steps.perfcheck.outputs.exists == 'true'
         run: |
-            mkdir -p build/gatling-site
-            latest=$(ls -td build/reports/gatling/* | head -1)
-            cp -r "$latest"/* build/gatling-site/
+
+          mkdir -p build/gatling-site
+
+          latest=$(ls -td build/reports/gatling/* | head -1)
+
+          cp -r "$latest"/* build/gatling-site/
+
 
       - name: Upload Gatling Reports
+        if: steps.perfcheck.outputs.exists == 'true'
         uses: actions/upload-artifact@v4
         with:
-            name: gatling-report
-            path: build/gatling-site
+          name: gatling-report
+          path: build/gatling-site
+
+      #
+      - name: Skip performance tests
+        if: steps.perfcheck.outputs.exists == 'false'
+        run: |
+          echo "No Gatling simulations found"
 
   deploy-reports:
 
