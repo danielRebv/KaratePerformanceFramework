@@ -13,7 +13,7 @@ on:
     branches:
       - master
 
-  # 👇 Ejecución manual flexible
+
   workflow_dispatch:
 
     inputs:
@@ -204,27 +204,28 @@ jobs:
                 site/${{ github.event.inputs.suite_name }}/run-${{ github.run_number }}/ 
 
 
+
       - name: Generate Runs JSON
         run: |
 
           mkdir -p site/data
 
-          if [ -f site/data/runs.json ]; then
-            cp site/data/runs.json temp-runs.json
-          else
-            echo '{ "accounts": ["latest"] }' > temp-runs.json
-          fi
+          curl -o runs.json \
+            https://danielrebv.github.io/KaratePerformanceFramework/data/runs.json \
+            || echo '{ "accounts": ["latest"] }' > runs.json
 
           RUN="run-${{ github.run_number }}"
 
-          if ! grep -q "$RUN" temp-runs.json; then
+          if ! grep -q "$RUN" runs.json; then
 
-            sed -i 's/]/,\n    "'"$RUN"'"\n  ]/' temp-runs.json
+            sed -i 's/]/,\n    "'"$RUN"'"\n  ]/' runs.json
 
           fi
 
-          cp temp-runs.json site/data/runs.json
+          cp runs.json site/data/runs.json
   
+
+
 
 
 
