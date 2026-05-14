@@ -204,28 +204,31 @@ jobs:
                 site/${{ github.event.inputs.suite_name }}/run-${{ github.run_number }}/ 
 
 
-
-
       - name: Generate Runs JSON
         run: |
-        
-          mkdir -p site/data
-        
-         if [ -f site/data/runs.json ]; then
-          cp site/data/runs.json temp-runs.json
-         else
-           echo '{ "accounts": [ "latest" ] }' > temp-runs.json
-          fi
-          RUN="run-${{ github.run_number }}"
-          if ! grep -q "$RUN" temp-runs.json; then
-            sed -i 's/]/,\n    "'"$RUN"'"\n  ]/' temp-runs.json
-        
-          fi
-          cp temp-runs.json site/data/runs.json
-      
-      
 
-      # =====================================================
+          mkdir -p site/data
+
+          if [ -f site/data/runs.json ]; then
+            cp site/data/runs.json temp-runs.json
+          else
+            echo '{ "accounts": ["latest"] }' > temp-runs.json
+          fi
+
+          RUN="run-${{ github.run_number }}"
+
+          if ! grep -q "$RUN" temp-runs.json; then
+
+            sed -i 's/]/,\n    "'"$RUN"'"\n  ]/' temp-runs.json
+
+          fi
+
+          cp temp-runs.json site/data/runs.json
+  
+
+
+
+# =====================================================
       # Gatling Reports
       # =====================================================
 
