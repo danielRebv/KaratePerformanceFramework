@@ -175,7 +175,29 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # =====================================================
+
+      - name: Download existing GitHub Pages
+        run: |
+          mkdir -p existing-site
+          wget \
+            --mirror \
+            --convert-links \
+            --adjust-extension \
+            --page-requisites \
+            --no-parent \
+            https://danielrebv.github.io/KaratePerformanceFramework/
+          
+          cp -r danielrebv.github.io/KaratePerformanceFramework/* existing-site/ || true
+        
+
+      - name: Restore existing reports
+        run: |
+          mkdir -p site
+          cp -r existing-site/* site/ || true
+  
+
+
+# =====================================================
       # Karate Reports
       # =====================================================
 
