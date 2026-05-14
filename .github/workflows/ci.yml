@@ -204,20 +204,31 @@ jobs:
                 site/${{ github.event.inputs.suite_name }}/run-${{ github.run_number }}/ 
           
 
+
       - name: Generate Runs JSON
         run: |
 
           mkdir -p site/data
 
-          echo '{
+          RUNS=$(find site/accounts -maxdepth 1 -type d -name "run-*" \
+            | sort -V \
+            | xargs -n 1 basename)
+
+          JSON='{
             "accounts": [
-              "latest",
-              "run-${{ github.run_number }}"
+              "latest"'
+
+          for run in $RUNS
+          do
+            JSON="$JSON,
+              \"$run\""
+          done
+
+          JSON="$JSON
             ]
-          }' > site/data/runs.json
+          }"
 
-
-
+          echo "$JSON" > site/data/runs.json
 
 # =====================================================
       # Gatling Reports
