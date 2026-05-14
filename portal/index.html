@@ -204,36 +204,25 @@
 
     </div>
 
-    <div class="reports"><div class="card">
-        <div class="card-title">Accounts - Karate</div>
-        <div class="card-description"> Functional API testing reports for Accounts domain.</div>
-        <div class="card-footer">
+    <div class="reports">
+        <div class="card">
+            <div class="card-title">Accounts - Karate</div>
+            <div class="card-description"> Functional API testing reports for Accounts domain.</div>
+            <div class="card-footer">
 
-            <select
-                    onchange="window.location.href=this.value"
-                    class="dropdown"
-            >
+                <select id="accounts-dropdown" onchange="window.location.href=this.value" class="dropdown"> </select>
 
-                <option value="./accounts/latest/karate/karate-summary.html">
-                    Latest
-                </option>
+                <span class="badge">OPEN</span>
 
-                <option value="./accounts/run-42/karate/karate-summary.html">
-                    Run-42
-                </option>
-
-            </select>
-
-            <span class="badge">OPEN</span>
-
+            </div>
         </div>
-    </div> <a class="card" href="./gatling/">
-        <div class="card-title">Gatling Reports</div>
-        <div class="card-description"> Review performance metrics, response times, throughput, and load testing
-            analytics.
-        </div>
-        <div class="card-footer"><span>Performance Testing</span> <span class="badge">OPEN</span></div>
-    </a></div>
+        <a class="card" href="./gatling/">
+            <div class="card-title">Gatling Reports</div>
+            <div class="card-description"> Review performance metrics, response times, throughput, and load testing
+                analytics.
+            </div>
+            <div class="card-footer"><span>Performance Testing</span> <span class="badge">OPEN</span></div>
+        </a></div>
 
     <div class="footer">
         FWKarate2xx • QA Automation Platform
@@ -241,6 +230,15 @@
 
 </div>
 
+<script> fetch('./data/runs.json').then(response => response.json()).then(data => {
+    const dropdown = document.getElementById('accounts-dropdown');
+    data.accounts.forEach(run => {
+        const option = document.createElement('option');
+        option.text = run;
+        option.value = `./accounts/${run}/karate/karate-summary.html`;
+        dropdown.appendChild(option);
+    });
+}); </script>
 </body>
 
 </html>
