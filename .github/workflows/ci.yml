@@ -175,14 +175,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Checkout GitHub Pages branch
-        uses: actions/checkout@v4
-        with:
-           ref: gh-pages
-           path: gh-pages
-
-
-    # =====================================================
+      # =====================================================
       # Karate Reports
       # =====================================================
 
@@ -194,50 +187,45 @@ jobs:
 
       - name: Create Karate Structure
         run: |
-              mkdir -p site/${{ github.event.inputs.suite_name }}/latest/karate
-              mkdir -p site/${{ github.event.inputs.suite_name }}/run-${{ github.run_number }}/karate
-          
+          mkdir -p site/${{ github.event.inputs.suite_name }}/latest/karate
+          mkdir -p site/${{ github.event.inputs.suite_name }}/run-${{ github.run_number }}/karate
+
 
       - name: Copy Latest Karate Reports
         run: |
-              rm -rf site/${{ github.event.inputs.suite_name }}/latest/karate/*
-              cp -r temp/karate/* \
-                  site/${{ github.event.inputs.suite_name }}/latest/karate/   
-          
+          rm -rf site/${{ github.event.inputs.suite_name }}/latest/karate/*
+          cp -r temp/karate/* \
+              site/${{ github.event.inputs.suite_name }}/latest/karate/   
+
 
       - name: Copy Historical Karate Reports
         run: |
           cp -r temp/karate \
                 site/${{ github.event.inputs.suite_name }}/run-${{ github.run_number }}/ 
-          
+
+
 
 
       - name: Generate Runs JSON
         run: |
-
+        
           mkdir -p site/data
+        
+         if [ -f site/data/runs.json ]; then
+          cp site/data/runs.json temp-runs.json
+         else
+           echo '{ "accounts": [ "latest" ] }' > temp-runs.json
+          fi
+          RUN="run-${{ github.run_number }}"
+          if ! grep -q "$RUN" temp-runs.json; then
+            sed -i 's/]/,\n    "'"$RUN"'"\n  ]/' temp-runs.json
+        
+          fi
+          cp temp-runs.json site/data/runs.json
+      
+      
 
-          RUNS=$(find site/accounts -maxdepth 1 -type d -name "run-*" \
-            | sort -V \
-            | xargs -n 1 basename)
-
-          JSON='{
-            "accounts": [
-              "latest"'
-
-          for run in $RUNS
-          do
-            JSON="$JSON,
-              \"$run\""
-          done
-
-          JSON="$JSON
-            ]
-          }"
-
-          echo "$JSON" > site/data/runs.json
-
-# =====================================================
+      # =====================================================
       # Gatling Reports
       # =====================================================
 
