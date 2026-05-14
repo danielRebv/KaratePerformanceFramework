@@ -185,7 +185,8 @@ jobs:
             --adjust-extension \
             --page-requisites \
             --no-parent \
-            https://danielrebv.github.io/KaratePerformanceFramework/
+            https://danielrebv.github.io/KaratePerformanceFramework/ \
+            || true
           
           cp -r danielrebv.github.io/KaratePerformanceFramework/* existing-site/ || true
         
