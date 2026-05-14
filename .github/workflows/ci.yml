@@ -200,8 +200,8 @@ jobs:
 
       - name: Copy Historical Karate Reports
         run: |
-          cp -r temp/karate/* \
-            site/${{ github.event.inputs.suite_name }}/run-${{ github.run_number }}/karate/    
+          cp -r temp/karate \
+                site/${{ github.event.inputs.suite_name }}/run-${{ github.run_number }}/  
 
       # =====================================================
       # Gatling Reports
