@@ -175,7 +175,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # =====================================================
+      - name: Checkout GitHub Pages branch
+        uses: actions/checkout@v4
+        with:
+           ref: gh-pages
+           path: gh-pages
+
+
+    # =====================================================
       # Karate Reports
       # =====================================================
 
