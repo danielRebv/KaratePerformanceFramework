@@ -204,11 +204,30 @@
 
     </div>
 
-    <div class="reports"><a class="card" href="./accounts/latest/karate/">
+    <div class="reports"><div class="card">
         <div class="card-title">Accounts - Karate</div>
         <div class="card-description"> Functional API testing reports for Accounts domain.</div>
-        <div class="card-footer"><span>Functional Testing</span> <span class="badge">OPEN</span></div>
-    </a> <a class="card" href="./gatling/">
+        <div class="card-footer">
+
+            <select
+                    onchange="window.location.href=this.value"
+                    class="dropdown"
+            >
+
+                <option value="./accounts/latest/karate/karate-summary.html">
+                    Latest
+                </option>
+
+                <option value="./accounts/run-38/karate/karate-summary.html">
+                    Run-38
+                </option>
+
+            </select>
+
+            <span class="badge">OPEN</span>
+
+        </div>
+    </div> <a class="card" href="./gatling/">
         <div class="card-title">Gatling Reports</div>
         <div class="card-description"> Review performance metrics, response times, throughput, and load testing
             analytics.
