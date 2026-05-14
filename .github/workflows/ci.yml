@@ -28,6 +28,11 @@ on:
         required: true
         default: 'false'
 
+      suite_name:
+        description: 'Suite name'
+        required: true
+        default: 'accounts'
+
 permissions:
   contents: read
   pages: write
@@ -178,7 +183,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: karate-reports
-          path: site/karate
+          path: site/${{ github.event.inputs.suite_name }}/latest/karate
 
       # =====================================================
       # Gatling Reports
