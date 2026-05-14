@@ -183,7 +183,25 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: karate-reports
-          path: site/${{ github.event.inputs.suite_name }}/latest/karate
+          path: temp/karate
+
+      - name: Create Karate Structure
+        run: |
+              mkdir -p site/${{ github.event.inputs.suite_name }}/latest/karate
+              mkdir -p site/${{ github.event.inputs.suite_name }}/run-${{ github.run_number }}/karate
+          
+
+      - name: Copy Latest Karate Reports
+        run: |
+              rm -rf site/${{ github.event.inputs.suite_name }}/latest/karate/*
+              cp -r temp/karate/* \
+                  site/${{ github.event.inputs.suite_name }}/latest/karate/   
+          
+
+      - name: Copy Historical Karate Reports
+        run: |
+          cp -r temp/karate/* \
+            site/${{ github.event.inputs.suite_name }}/run-${{ github.run_number }}/karate/    
 
       # =====================================================
       # Gatling Reports
