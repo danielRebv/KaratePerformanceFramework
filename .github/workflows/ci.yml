@@ -201,9 +201,25 @@ jobs:
       - name: Copy Historical Karate Reports
         run: |
           cp -r temp/karate \
-                site/${{ github.event.inputs.suite_name }}/run-${{ github.run_number }}/  
+                site/${{ github.event.inputs.suite_name }}/run-${{ github.run_number }}/ 
+          
 
-      # =====================================================
+      - name: Generate Runs JSON
+        run: |
+
+          mkdir -p site/data
+
+          echo '{
+            "accounts": [
+              "latest",
+              "run-${{ github.run_number }}"
+            ]
+          }' > site/data/runs.json
+
+
+
+
+# =====================================================
       # Gatling Reports
       # =====================================================
 
