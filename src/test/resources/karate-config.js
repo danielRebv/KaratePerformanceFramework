@@ -1,11 +1,14 @@
 function fn() {
+    var config = {};
 
     karate.configure('logging', {
         pretty: false,
         showAllSteps: false
     });
 
-    return {
-        baseUrl: 'https://jsonplaceholder.typicode.com'
-    };
+    config.baseUrl = 'https://jsonplaceholder.typicode.com';
+    config.pathBaseGKE = 'https://apiqa-int.bice.local';
+
+    karate.log(config)
+    return config;
 }
