@@ -95,7 +95,7 @@ public class PerformanceSimulation extends Simulation {
                 .protocols(protocol);
     }
 
-    private List<GeneratedFeature> generateFeatures(
+    static List<GeneratedFeature> generateFeatures(
             String tag
     ) {
 
@@ -240,7 +240,7 @@ public class PerformanceSimulation extends Simulation {
         return generated;
     }
 
-    private PerformanceConfig extractPerformanceConfig(
+    static PerformanceConfig extractPerformanceConfig(
             String content
     ) {
 
@@ -278,7 +278,7 @@ public class PerformanceSimulation extends Simulation {
         }
     }
 
-    private OpenInjectionStep buildInjection(PerformanceConfig config) {
+    static OpenInjectionStep buildInjection(PerformanceConfig config) {
 
         String type = config.getInjection().getType();
 
