@@ -1,0 +1,31 @@
+{
+  "name": "obtenerOtrosFondosParaInvertir",
+  "protocol": "rest",
+  "baseUrl": "https://apiowpqa.bice.local:7004",
+  "request": {
+    "method": "GET",
+    "path": "operatoria-fondos-rest/obtenerOtrosFondosParaInvertir",
+
+  "headers": {
+    "Accept": "application/json"
+  },
+  "body": null,
+  "expectedStatus": 200
+},
+  "performance": {
+    "strategy": "sequential",
+    "injection": {
+      "type": "tps",
+      "tps": 10,
+      "preAllocatedVUs": 5,
+      "maxVus": 5,
+      "duration": 10,
+      "rampup": 5
+    }
+  },
+  "report": {
+    "environment": "QA",
+    "version": "version-del-servicio",
+    "dataset": "datos-de-prueba-v1"
+  }
+}

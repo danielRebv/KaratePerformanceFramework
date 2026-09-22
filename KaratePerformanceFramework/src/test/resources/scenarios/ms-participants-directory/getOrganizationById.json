@@ -1,0 +1,42 @@
+{
+  "name": "participants-directory",
+  "protocol": "grpc",
+  "host": "grpc-int-qa.bice.local:443",
+  "proto": "../proto/participants-directory.proto",
+  "service": "participants.ParticipantsDirectoryService",
+  "tls": true,
+
+  "request": [
+    {
+      "id": "getAllOrganizations",
+      "name": "getAllOrganizations",
+      "method": "GetAllOrganizations",
+      "request":{ },
+      "extractFromPrevius": {
+        "organization_id": "organization[0].organization_id",
+
+      }
+    },
+    {
+      "id": "getOrganizationById",
+      "name": "getOrganizationById",
+      "method": "GetOrganizationById",
+      "dependencia": "GetAllOrganizations",
+      "request":{
+        "organization_id": "${organization_id}"
+      }
+    }
+  ],
+  "performance": {
+    "strategy": "sequential",
+    "injection": {
+      "type": "tps",
+      "tps": 1,
+      "preAllocatedVUs": 2,
+      "maxVUs": 10,
+      "duration": 10,
+      "rampup": 5
+    }
+  }
+}
+

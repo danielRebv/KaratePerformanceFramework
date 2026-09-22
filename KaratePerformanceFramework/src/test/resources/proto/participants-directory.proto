@@ -1,0 +1,236 @@
+syntax = "proto3";
+package participants;
+
+option java_package = "cl.bice.app.grpc";
+option java_multiple_files = true;
+import "google/protobuf/empty.proto";
+import "validate/validate.proto";
+
+
+service ParticipantsDirectoryService {
+
+  rpc GetLastUpdated (google.protobuf.Empty) returns (XLastUpdatedResponse) {}
+
+  // Participants 
+  rpc GetParticipantById (ParticipantId) returns (ParticipantDetails) {}  
+  rpc GetAllParticipants (google.protobuf.Empty) returns (GetParticipantsResponse) {}
+  rpc SyncParticipants (SyncParticipantsRequest) returns (google.protobuf.Empty) {}
+  
+  // // Organizations
+  rpc GetOrganizationById (OrganizationId) returns (OrganizationDetails) {}
+  rpc GetAllOrganizations (google.protobuf.Empty) returns (GetOrganizationsResponse) {}
+  rpc SyncOrganizations (SyncOrganizationsRequest) returns (google.protobuf.Empty) {}
+  
+  // Authorization Servers
+  rpc GetAuthorizationServerById (AuthorizationServerId) returns (AuthorizationServerDetails) {}
+  rpc GetAllAuthorizationServerByOrganizationId (OrganizationId) returns (GetAuthorizationServersResponse) {}
+  rpc GetAllAuthorizationServers (google.protobuf.Empty) returns (GetAuthorizationServersResponse) {}
+  rpc SyncAuthorizationServers (SyncAuthorizationServersRequest) returns (google.protobuf.Empty) {}
+
+  // Api Resources
+  rpc GetApiResourceById (ApiResourceId) returns (ApiResourceDetails) {}
+  rpc GetAllApiResourcesByAuthorizationServerId (AuthorizationServerId) returns (GetApiResourcesResponse) {}
+  rpc GetAllApiResources (google.protobuf.Empty) returns (GetApiResourcesResponse) {}
+  rpc SyncApiResources (SyncApiResourcesRequest) returns (google.protobuf.Empty) {}
+
+  // Open ID Configurations
+  rpc GetOpenIdConfigurationById (OpenIdConfigurationId) returns (OpenIdConfigurationDetails) {}
+  rpc GetAllOpenIdConfigurations (google.protobuf.Empty) returns (GetOpenIdConfigurationsResponse) {}
+  rpc SyncOpenIdConfigurations (SyncOpenIdConfigurationsRequest) returns (google.protobuf.Empty) {}
+  
+}
+
+message ParticipantId{
+  string organization_id = 1;
+}
+
+message ParticipantDetails {
+  string organization_id = 1                                   [(validate.rules).string = {min_len: 1, max_len: 150}];
+  string organization_name = 2                                 [(validate.rules).string = {min_len: 1, max_len: 150}];
+  string legal_entity_name = 3                                 [(validate.rules).string = {min_len: 1, max_len: 150}];
+  string status = 4                                            [(validate.rules).string = {min_len: 1, max_len: 150}];
+  repeated string tags = 5                                     [(validate.rules).repeated = {min_items: 1, max_items: 5}];
+  string country = 6                                           [(validate.rules).string = {min_len: 1, max_len: 150}];
+  string country_of_registration = 7                           [(validate.rules).string = {min_len: 1, max_len: 150}];
+  string created_on = 8                                        [(validate.rules).string = {min_len: 1, max_len: 150}];
+  string updated_at = 9                                        [(validate.rules).string = {min_len: 1, max_len: 150}];
+}
+
+message GetParticipantsResponse {
+  bool success = 1;
+  string message = 2                                            [(validate.rules).string = {min_len: 1, max_len: 150}];
+  int32 code = 3                                                [(validate.rules).int32.gt = 0];
+  repeated ParticipantDetails items = 4                         [(validate.rules).message.required = true];
+  Pagination pagination = 5;
+}
+
+message SyncParticipantsRequest {
+  repeated ParticipantDetails items = 1                         [(validate.rules).repeated = {min_items: 1, max_items: 100}];
+  XLastUpdated x_last_updated = 2;
+}
+
+message OrganizationId{
+  string organization_id = 1                                   [(validate.rules).string = {min_len: 1, max_len: 150}];
+}
+
+message OrganizationDetails {
+  string organization_id = 1                                   [(validate.rules).string = {min_len: 1, max_len: 150}];
+  string organization_name = 2                                 [(validate.rules).string = {min_len: 1, max_len: 150}];
+  string legal_entity_name = 3                                 [(validate.rules).string = {min_len: 1, max_len: 150}];
+  string country = 4                                           [(validate.rules).string = {min_len: 1, max_len: 150}];
+  string status = 5                                            [(validate.rules).string = {min_len: 1, max_len: 150}];
+  string registration_number = 6                               [(validate.rules).string = {min_len: 1, max_len: 150}];
+  string company_register = 7                                  [(validate.rules).string = {min_len: 1, max_len: 150}];
+  string address_line1 = 8                                     [(validate.rules).string = {min_len: 1, max_len: 150}];
+  string address_line2 = 9                                     [(validate.rules).string = {min_len: 1, max_len: 150}];
+  string city = 10                                             [(validate.rules).string = {min_len: 1, max_len: 150}];
+  string postcode = 11                                         [(validate.rules).string = {min_len: 1, max_len: 150}];
+  string created_on = 12                                       [(validate.rules).string = {min_len: 1, max_len: 150}];
+  string updated_at = 13                                       [(validate.rules).string = {min_len: 1, max_len: 150}];
+}
+  
+message GetOrganizationsResponse {
+  bool success = 1;
+  string message = 2                                           [(validate.rules).string = {min_len: 1, max_len: 150}];
+  int32 code = 3                                               [(validate.rules).int32.gt = 0];
+  repeated OrganizationDetails items = 4                       [(validate.rules).message.required = true];
+  Pagination pagination = 5;
+}
+
+message SyncOrganizationsRequest {
+  repeated OrganizationDetails items = 1                       [(validate.rules).repeated = {min_items: 1, max_items: 100}];
+  XLastUpdated x_last_updated = 2;
+}
+
+message AuthorizationServerId{
+  string authorization_server_id = 1                            [(validate.rules).string = {min_len: 1, max_len: 150}];
+}
+
+message AuthorizationServerDetails {
+  string authorization_server_id = 1                            [(validate.rules).string = {min_len: 1, max_len: 150}];
+  string organization_id = 2                                    [(validate.rules).string = {min_len: 1, max_len: 150}];
+  string customer_friendly_name = 3                             [(validate.rules).string = {min_len: 1, max_len: 150}];
+  string issuer = 4                                             [(validate.rules).string = {min_len: 1, max_len: 150}];
+  string open_id_discovery_document = 5                         [(validate.rules).string = {min_len: 1, max_len: 150}];
+  bool supports_ciba = 6;
+  bool supports_dcr = 7;
+  string developer_portal_uri = 8                               [(validate.rules).string = {min_len: 1, max_len: 150}];
+  string terms_of_service_uri = 9                               [(validate.rules).string = {min_len: 1, max_len: 150}];
+  string customer_friendly_description = 10                     [(validate.rules).string = {min_len: 1, max_len: 150}];
+  string deprecated_date = 11                                   [(validate.rules).string = {min_len: 1, max_len: 150}];
+  string retirement_date = 12                                   [(validate.rules).string = {min_len: 1, max_len: 150}];
+  string payload_signing_cert_location_uri = 13                 [(validate.rules).string = {min_len: 1, max_len: 150}];
+  string created_on = 14                                        [(validate.rules).string = {min_len: 1, max_len: 150}];
+  string updated_at = 15                                        [(validate.rules).string = {min_len: 1, max_len: 150}];
+}
+
+message GetAuthorizationServersResponse {
+  bool success = 1;
+  string message = 2                                             [(validate.rules).string = {min_len: 1, max_len: 150}]  ;
+  int32 code = 3                                                 [(validate.rules).int32.gt = 0];
+  repeated AuthorizationServerDetails items = 4                  [(validate.rules).message.required = true];
+  Pagination pagination = 5;
+}
+
+message SyncAuthorizationServersRequest {
+  repeated AuthorizationServerDetails items = 1                  [(validate.rules).repeated = {min_items: 1, max_items: 5}];
+  XLastUpdated x_last_updated = 2;
+}
+
+message ApiResourceId{
+  string api_resource_id = 1                                      [(validate.rules).string = {min_len: 1, max_len: 150}];
+}
+
+message ApiResourceDetails {
+  string api_resource_id = 1                                      [(validate.rules).string = {min_len: 1, max_len: 150}];
+  string authorization_server_id = 2                              [(validate.rules).string = {min_len: 1, max_len: 150}];
+  string api_family_type = 3                                      [(validate.rules).string = {min_len: 1, max_len: 150}];
+  string api_version = 4                                          [(validate.rules).string = {min_len: 1, max_len: 150}];
+  bool family_complete = 5;
+  repeated ResourceEndpoint endpoints = 6;
+  string created_on = 7                                            [(validate.rules).string = {min_len: 1, max_len: 150}];
+  string updated_at = 8                                            [(validate.rules).string = {min_len: 1, max_len: 150}];
+}
+
+message ResourceEndpoint {
+  string id = 1                                                   [(validate.rules).string = {min_len: 1, max_len: 150}];
+  string api_endpoint = 2                                         [(validate.rules).string = {min_len: 1, max_len: 150}];
+}
+
+message GetApiResourcesResponse {
+  bool success = 1;
+  string message = 2                                              [(validate.rules).string = {min_len: 1, max_len: 150}];
+  int32 code = 3                                                  [(validate.rules).int32.gt = 0];
+  repeated ApiResourceDetails items = 4                           [(validate.rules).message.required = true];
+  Pagination pagination = 5;
+}
+
+message SyncApiResourcesRequest {
+  repeated ApiResourceDetails items = 1                            [(validate.rules).repeated = {min_items: 1, max_items: 5}];
+  XLastUpdated x_last_updated = 2;
+}
+
+message OpenIdConfigurationId{
+  int64 open_id_configuration_id = 1                                [(validate.rules).int64 = {gt: 0,lt: 1000}] ;//Mayor que 0, Menor que 1000
+}
+
+message OpenIdConfigurationDetails {
+  int64 id = 1                                                      [(validate.rules).int64 = {gt: 0,lt: 1000}] ;//Mayor que 0, Menor que 1000
+  string authorization_endpoint = 2                                 [(validate.rules).string = {min_len: 1, max_len: 150}];
+  string token_endpoint = 3                                         [(validate.rules).string = {min_len: 1, max_len: 150}];
+  string jwks_uri = 4                                               [(validate.rules).string = {min_len: 1, max_len: 150}];
+  string registration_endpoint = 5                                  [(validate.rules).string = {min_len: 1, max_len: 150}];
+  string pushed_authorization_request_endpoint = 6                  [(validate.rules).string = {min_len: 1, max_len: 150}];
+  string revocation_endpoint = 7                                    [(validate.rules).string = {min_len: 1, max_len: 150}];
+  bool tls_client_certificate_bound_access_tokens = 8;
+  repeated string response_types_supported = 9                      [(validate.rules).string = {min_len: 1, max_len: 150}];
+  repeated string grant_types_supported = 10                        [(validate.rules).string = {min_len: 1, max_len: 150}];
+  repeated string scopes_supported = 11                             [(validate.rules).string = {min_len: 1, max_len: 150}];
+  repeated EndpointAliases mtls_endpoint_aliases = 12;
+  string created_on = 13                                            [(validate.rules).string = {min_len: 1, max_len: 150}];
+  string updated_at = 14                                            [(validate.rules).string = {min_len: 1, max_len: 150}];
+}
+
+message EndpointAliases{
+  string alias = 1                                                  [(validate.rules).string = {min_len: 1, max_len: 150}];
+  string endpoint = 2                                               [(validate.rules).string = {min_len: 1, max_len: 150}];
+}
+
+message GetOpenIdConfigurationsResponse {
+  bool success = 1;
+  string message = 2                                                [(validate.rules).string = {min_len: 1, max_len: 150}];
+  int32 code = 3                                                    [(validate.rules).int32.gt = 0];
+  repeated OpenIdConfigurationDetails items = 4                     [(validate.rules).message.required = true];
+  Pagination pagination = 5;
+}
+
+message SyncOpenIdConfigurationsRequest {
+  repeated OpenIdConfigurationDetails items = 1                     [(validate.rules).repeated = {min_items: 1, max_items: 5}];
+  XLastUpdated x_last_updated = 2;
+}
+
+message XLastUpdated {
+  string x_version = 1                                              [(validate.rules).string = {min_len: 1, max_len: 150}];
+  string x_checksum = 2                                             [(validate.rules).string = {min_len: 1, max_len: 150}];
+  string x_last_updated = 3                                         [(validate.rules).string = {min_len: 1, max_len: 150}];
+  string x_origin = 4                                               [(validate.rules).string = {min_len: 1, max_len: 150}];
+  string x_resource = 5                                             [(validate.rules).string = {min_len: 1, max_len: 150}];
+  string x_created_at = 6                                           [(validate.rules).string = {min_len: 1, max_len: 150}];
+  string x_updated_at = 7                                           [(validate.rules).string = {min_len: 1, max_len: 150}];
+}
+
+message XLastUpdatedResponse {
+  repeated XLastUpdated items = 1;
+}
+
+message Pagination {
+  int32 page = 1                                                     [(validate.rules).int32.gt = 0];
+  int32 page_size = 2                                                [(validate.rules).int32.gt = 0];
+  int32 total_pages = 3                                              [(validate.rules).int32.gt = 0];
+  int32 total_items = 4                                              [(validate.rules).int32.gt = 0];
+}
+
+message meta{
+  string timestamp = 1                                              [(validate.rules).string = {min_len: 1, max_len: 150}];
+  string x_fapi_interaction_id = 2                                  [(validate.rules).string = {min_len: 1, max_len: 150}];
+}
