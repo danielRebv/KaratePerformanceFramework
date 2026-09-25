@@ -64,7 +64,7 @@ jobs:
           set +e
 
           k6 run \
-            -e 'SCENARIO=../../../resources/scenarios/grpcbin-lab/grpcbin-single.json' \
+            -e 'SCENARIO=../../../test/resources/scenarios/grpcbin-lab/grpcbin-single.json' \
             -e 'DEBUG=true' \
             --out "json=$EVIDENCE_DIR/metrics.jsonl" \
             ./grpc_f-runner.js \
