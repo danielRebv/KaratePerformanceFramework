@@ -19,7 +19,7 @@ jobs:
     timeout-minutes: 10
 
     env:
-      EVIDENCE_DIR: ${{ runner.temp }}/grpcbin-evidence
+      EVIDENCE_DIR: /tmp/grpcbin-evidence
 
     steps:
       - name: Checkout triggering commit
