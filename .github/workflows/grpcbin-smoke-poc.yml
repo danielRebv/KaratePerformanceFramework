@@ -6,7 +6,8 @@ on:
       - poc/grpcbin-smoke
     paths:
       - .github/workflows/grpcbin-smoke-poc.yml
-      - grpcbin-lab/**
+      - src/test/resources/scenarios/grpcbin-lab/**
+      - src/test/resources/proto/hello.proto
       - src/test/java/runners k6/grpc-runner.js
       - src/test/java/runners k6/grpc_f-runner.js
 
@@ -32,10 +33,17 @@ jobs:
         shell: bash
         run: |
           mkdir -p "$EVIDENCE_DIR"
+
           git rev-parse HEAD > "$EVIDENCE_DIR/commit.txt"
           uname -a > "$EVIDENCE_DIR/os.txt"
-          cp grpcbin-lab/hello.proto "$EVIDENCE_DIR/"
-          cp grpcbin-lab/grpcbin-single.json "$EVIDENCE_DIR/"
+
+          cp \
+            src/test/resources/proto/hello.proto \
+            "$EVIDENCE_DIR/"
+
+          cp \
+            src/test/resources/scenarios/grpcbin-lab/grpcbin-single.json \
+            "$EVIDENCE_DIR/"
 
       - name: Install k6 2.0.0
         uses: grafana/setup-k6-action@v1
@@ -52,24 +60,30 @@ jobs:
         working-directory: src/test/java/runners k6
         run: |
           mkdir -p k6/reports
+
           set +e
+
           k6 run \
-            -e 'SCENARIO=../../../../grpcbin-lab/grpcbin-single.json' \
+            -e 'SCENARIO=../../../resources/scenarios/grpcbin-lab/grpcbin-single.json' \
             -e 'DEBUG=true' \
             --out "json=$EVIDENCE_DIR/metrics.jsonl" \
             ./grpc_f-runner.js \
             > "$EVIDENCE_DIR/stdout.log" \
             2> "$EVIDENCE_DIR/stderr.log"
+
           k6_exit=$?
+
           set -e
 
           printf '%s\n' "$k6_exit" > "$EVIDENCE_DIR/exit-code.txt"
+
           cat "$EVIDENCE_DIR/stdout.log"
           cat "$EVIDENCE_DIR/stderr.log" >&2
 
           if mkdir -p "$EVIDENCE_DIR/reports"; then
             if [ -d k6/reports ]; then
-              cp -R k6/reports/. "$EVIDENCE_DIR/reports/" || echo 'Warning: report copy failed' >&2
+              cp -R k6/reports/. "$EVIDENCE_DIR/reports/" \
+                || echo 'Warning: report copy failed' >&2
             fi
           else
             echo 'Warning: evidence reports directory could not be created' >&2
