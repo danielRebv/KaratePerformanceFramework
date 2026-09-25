@@ -51,6 +51,7 @@ jobs:
         shell: bash
         working-directory: src/test/java/runners k6
         run: |
+          mkdir -p k6/reports
           set +e
           k6 run \
             -e 'SCENARIO=../../../../grpcbin-lab/grpcbin-single.json' \
