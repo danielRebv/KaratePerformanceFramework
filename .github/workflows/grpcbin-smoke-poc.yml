@@ -73,6 +73,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: grpcbin-smoke-${{ github.run_id }}-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/grpcbin-evidence/
+          path: /tmp/grpcbin-evidence/
           if-no-files-found: warn
           retention-days: 7
