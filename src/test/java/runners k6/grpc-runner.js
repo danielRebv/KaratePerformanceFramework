@@ -3,7 +3,9 @@ import { check } from 'k6';
 
 import {
   createReporter
-} from '../k6-reporter/collector.js';
+} from '../../../../portal/k6-reporter/collector.js';
+
+const GRPC_STATUS_OK = Number(grpc.StatusOK);
 
 // --------------------------------------------------
 // Configuración del escenario
@@ -139,7 +141,7 @@ requestList.forEach(function (step, index) {
   fullMethod(step);
 
   const expectedStatus = Number(
-    step.expectedStatus ?? config.expectedStatus ?? grpc.StatusOK
+    step.expectedStatus ?? config.expectedStatus ?? GRPC_STATUS_OK
   );
 
   if (
@@ -360,7 +362,7 @@ export default function () {
       const expectedStatus = Number(
         step.expectedStatus ??
         config.expectedStatus ??
-        grpc.StatusOK
+        GRPC_STATUS_OK
       );
 
       const callToken = reporter.startCall();
@@ -370,11 +372,19 @@ export default function () {
       let invocationError = null;
 
       try {
-        response = client.invoke(
+        const rawResponse = client.invoke(
           method,
           payload,
           params
         );
+
+        response = rawResponse == null ? rawResponse : {
+          status: Number(rawResponse.status),
+          message: rawResponse.message,
+          error: rawResponse.error,
+          headers: rawResponse.headers,
+          trailers: rawResponse.trailers
+        };
       } catch (error) {
         invocationError = error;
       }
@@ -401,7 +411,7 @@ export default function () {
           );
         };
 
-      if (expectedStatus === grpc.StatusOK) {
+      if (expectedStatus === GRPC_STATUS_OK) {
         validations[method + ' · respuesta presente'] =
           function (result) {
             // Un mensaje {} es válido.

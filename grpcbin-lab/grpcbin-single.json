@@ -1,0 +1,25 @@
+{
+  "name": "grpcbin-sayhello-single",
+  "protocol": "grpc",
+  "host": "grpcb.in:443",
+  "tls": true,
+  "insecureSkipTLSVerify": false,
+  "proto": "../../../../grpcbin-lab/hello.proto",
+  "service": "hello.HelloService",
+  "method": "SayHello",
+  "request": {
+    "greeting": "codex-lab"
+  },
+  "expectedStatus": 0,
+  "timeout": "10s",
+  "performance": {
+    "injection": {
+      "type": "tps",
+      "tps": 1,
+      "preAllocatedVUs": 1,
+      "maxVUs": 1,
+      "rampup": 0,
+      "duration": 1
+    }
+  }
+}

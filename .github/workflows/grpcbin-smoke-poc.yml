@@ -1,0 +1,78 @@
+name: grpcbin smoke PoC
+
+on:
+  push:
+    branches:
+      - poc/grpcbin-smoke
+    paths:
+      - .github/workflows/grpcbin-smoke-poc.yml
+      - grpcbin-lab/**
+      - src/test/java/runners k6/grpc-runner.js
+      - src/test/java/runners k6/grpc_f-runner.js
+
+permissions:
+  contents: read
+
+jobs:
+  grpcbin-smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+
+    env:
+      EVIDENCE_DIR: ${{ runner.temp }}/grpcbin-evidence
+
+    steps:
+      - name: Checkout triggering commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+
+      - name: Prepare evidence
+        shell: bash
+        run: |
+          mkdir -p "$EVIDENCE_DIR"
+          git rev-parse HEAD > "$EVIDENCE_DIR/commit.txt"
+          uname -a > "$EVIDENCE_DIR/os.txt"
+          cp grpcbin-lab/hello.proto "$EVIDENCE_DIR/"
+          cp grpcbin-lab/grpcbin-single.json "$EVIDENCE_DIR/"
+
+      - name: Install k6 2.0.0
+        uses: grafana/setup-k6-action@v1
+        with:
+          k6-version: '2.0.0'
+
+      - name: Record k6 version
+        shell: bash
+        run: |
+          k6 version | tee "$EVIDENCE_DIR/k6-version.txt"
+
+      - name: Smoke grpcbin - one execution
+        shell: bash
+        working-directory: src/test/java/runners k6
+        run: |
+          set +e
+          k6 run \
+            -e 'SCENARIO=../../../../grpcbin-lab/grpcbin-single.json' \
+            -e 'DEBUG=true' \
+            --out "json=$EVIDENCE_DIR/metrics.jsonl" \
+            ./grpc_f-runner.js \
+            > "$EVIDENCE_DIR/stdout.log" \
+            2> "$EVIDENCE_DIR/stderr.log"
+          k6_exit=$?
+          set -e
+
+          printf '%s\n' "$k6_exit" > "$EVIDENCE_DIR/exit-code.txt"
+          cat "$EVIDENCE_DIR/stdout.log"
+          cat "$EVIDENCE_DIR/stderr.log" >&2
+
+          exit "$k6_exit"
+
+      - name: Preserve evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: grpcbin-smoke-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/grpcbin-evidence/
+          if-no-files-found: warn
+          retention-days: 7
