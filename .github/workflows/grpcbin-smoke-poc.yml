@@ -66,6 +66,14 @@ jobs:
           cat "$EVIDENCE_DIR/stdout.log"
           cat "$EVIDENCE_DIR/stderr.log" >&2
 
+          if mkdir -p "$EVIDENCE_DIR/reports"; then
+            if [ -d k6/reports ]; then
+              cp -R k6/reports/. "$EVIDENCE_DIR/reports/" || echo 'Warning: report copy failed' >&2
+            fi
+          else
+            echo 'Warning: evidence reports directory could not be created' >&2
+          fi
+
           exit "$k6_exit"
 
       - name: Preserve evidence

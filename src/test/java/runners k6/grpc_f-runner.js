@@ -1,6 +1,9 @@
 import executeFlow, {
-  options as grpcOptions
+  options as grpcOptions,
+  handleSummary
 } from './grpc-runner.js';
+
+export { handleSummary };
 
 // Ejecuta una sola vez el escenario completo.
 export const options = {
