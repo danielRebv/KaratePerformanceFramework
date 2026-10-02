@@ -385,6 +385,12 @@ export default function () {
           headers: rawResponse.headers,
           trailers: rawResponse.trailers
         };
+        if (__ENV.DEBUG === 'true') {
+          console.log(
+              'gRPC response [' + method + '] => ' +
+              JSON.stringify(response)
+          );
+        }
       } catch (error) {
         invocationError = error;
       }
