@@ -1,0 +1,12 @@
+{
+  "basicAuth": "Basic UXRIa3NzUXlFdElMMkJENm9oNzdDSHBmcUFZS1VVRzM6YUREOFpHdmFZV2I0ajFNVA==",
+  "AppPersonas":"Basic a01sdTlvcFY2bGhyQWlPV01SRTA1enR1cWsyU0pBM0E6NnVCZkpHckpFZlBDQVlicA==",
+  "PortalPersonas": "Basic QVg1eXhzQ3ZHM3k0TVdHbkFSaHZrMXFUQUxBMWpFcXY6Vk9NYjFJeGtvb0VVc093Tw==",
+  "PortalEmpresas": "Basic QUxEbnFEMm4zbzVKNGpGZ3VWNGZOazRWbWowdUFyZEg6ZHpUOFJJaWFYUE1GU2VlRw==",
+  "apiCreditoHipotecario": {
+    "cl": {
+      "key": "AX5yxsCvG3y4MWGnARhvk1qTALA1jEqv",
+      "pass": "VOMb1IxkooEUsOwO"
+    }
+  }
+}

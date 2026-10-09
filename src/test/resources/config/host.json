@@ -1,0 +1,12 @@
+{
+  "pathBaseGKE": "https://apiqa-int.bice.local",
+  "edgeMicro": "https://gwqa.bice.cl",
+  "pathApiCambio": "https://api-cambio-clave-1-cnl-trvl.apps.ocp-qa.bice.local/",
+  "cargoAbonoPath": "http://osbcqa.bice.local/",
+  "encriptaPath":"https://api-autenticacion-usuarios-1-cnl-trvl.apps.ocp-qa.bice.local",
+  "apiGeePath": "https://apiqa.bice.cl",
+  "ofertaConsumo": "https://api-oferta-credito-consumo-1-cred-depo.apps.ocp-qa.bice.local",
+  "flexCubePath": "http://osbfmqa.bice.local",
+  "pathBaseAPIGeeLAN": "https://apiqa.bice.local",
+  "srvMobilePath": "http://srvmobilews-api-qa.bice.local:80"
+}

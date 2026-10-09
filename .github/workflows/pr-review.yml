@@ -1,0 +1,52 @@
+name: QA PR Review
+
+on:
+  pull_request:
+    branches:
+      - develop
+
+jobs:
+
+  qa-review:
+
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Grant Execute Permission
+        run: chmod +x gradlew
+
+      - name: Compile
+        run: ./gradlew testClasses
+
+      - name: Execute PR Review Engine
+        run: ./gradlew pullRequestReview
+
+      - name: Execute New Test Cases
+        run: |
+          ./gradlew apiTest \
+          -Ptags=@TestCase=NEW
+
+      - name: Upload Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: karate-report
+          path: |
+            build/reports
+            build/karate-reports
