@@ -24,7 +24,14 @@ public class featureFileCollector {
             if (targetBranch == null ||
                     targetBranch.isBlank()) {
 
-                targetBranch = "main";
+                System.out.println(
+                        "TARGET BRANCH: "
+                                + targetBranch
+                );
+
+
+
+                targetBranch = "develop";
             }
 
             Process process =

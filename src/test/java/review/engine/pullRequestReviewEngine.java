@@ -81,6 +81,15 @@ public class pullRequestReviewEngine {
                         violations
                 );
 
+        System.out.println("Features encontradas:");
+
+        features.forEach(feature ->
+                System.out.println(
+                        feature.path()
+                )
+        );
+
+
         new markdownReportBuilder()
                 .build(result);
 
