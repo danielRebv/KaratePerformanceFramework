@@ -1,27 +1,69 @@
 package review.parser;
 
-import java.io.IOException;
-import java.nio.file.Files;
+import review.context.reviewContext;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
 public class featureFileCollector {
 
-    public List<Path> collect() throws IOException {
+    public List<Path> collect(
+            reviewContext context) {
 
-        try (Stream<Path> paths =
-                     Files.walk(
-                             Paths.get(
-                                     "src/test/java/features"
-                             ))) {
+        List<Path> features =
+                new ArrayList<>();
 
-            return paths
-                    .filter(path ->
-                            path.toString()
-                                    .endsWith(".feature"))
-                    .toList();
+        try {
+
+            String targetBranch =
+                    context.targetBranch();
+
+            if (targetBranch == null ||
+                    targetBranch.isBlank()) {
+
+                targetBranch = "main";
+            }
+
+            Process process =
+                    new ProcessBuilder(
+                            "git",
+                            "diff",
+                            "--name-only",
+                            "origin/" + targetBranch + "...HEAD"
+                    ).start();
+
+            try (BufferedReader reader =
+                         new BufferedReader(
+                                 new InputStreamReader(
+                                         process.getInputStream()
+                                 ))) {
+
+                String line;
+
+                while ((line = reader.readLine()) != null) {
+
+                    if (line.endsWith(".feature")) {
+
+                        features.add(
+                                Path.of(line)
+                        );
+                    }
+                }
+            }
+
+            process.waitFor();
+
+        } catch (Exception e) {
+
+            throw new RuntimeException(
+                    "Error obteniendo features modificadas",
+                    e
+            );
         }
+
+        return features;
     }
 }
