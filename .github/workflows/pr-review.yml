@@ -16,6 +16,7 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
+      issues: write
 
     steps:
 
@@ -53,52 +54,47 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const fs = require('fs');
+            
+            if (!fs.existsSync('build/pr-review-report.md')) {
+              return;
+            }
+            
+            const body = fs.readFileSync(
+              'build/pr-review-report.md',
+              'utf8'
+            );
+            
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body
+            });
 
-            let body;
+      - name: Execute New Test Cases
+        if: steps.review.outcome == 'success'
+        run: |
+          ./gradlew apiTest \
+          -Ptags=@TestCase=NEW
 
-            try {
-              body = fs.readFileSync(
-                'build/pr-review-report.md',
-                'utf8'
-              );
-            } catch (err) {
-              body =
-  # QA PR Review
+      - name: Upload Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: qa-review-artifacts
+          path: |
+            build/pr-review-report.md
+            build/reports
+            build/karate-reports
 
-  #No fue posible generar el reporte markdown.
-
-  #Revisar logs del job qa-review.`;
-  }
-
-  await github.rest.issues.createComment({
-owner: context.repo.owner,
-repo: context.repo.repo,
-issue_number: context.issue.number,
-body: body
-});
-
-- name: Execute New Test Cases
-  if: steps.review.outcome == 'success'
-  run: |
-    ./gradlew apiTest \
-    -Ptags=@TestCase=NEW
-
-- name: Upload Reports
-  if: always()
-  uses: actions/upload-artifact@v4
-  with:
-    name: qa-review-artifacts
-    path: |
-      build/pr-review-report.md
-      build/reports
-      build/karate-reports
-      
       - name: Debug Branches
-  run: |
-    echo "BASE=${{ github.base_ref }}"
-    echo "HEAD=${{ github.head_ref }}"
-    git branch -a
+        if: always()
+        run: |
+          echo "BASE=${{ github.base_ref }}"
+          echo "HEAD=${{ github.head_ref }}"
+          git branch -a
+          git diff --name-only origin/${{ github.base_ref }}...HEAD || true
 
-- name: Fail Workflow When Review Failed
-  if: steps.review.outcome == 'failure'
-  run: exit 1
+      - name: Fail Workflow When Review Failed
+        if: steps.review.outcome == 'failure'
+        run: exit 1

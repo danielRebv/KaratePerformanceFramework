@@ -4,6 +4,7 @@ import review.context.reviewContext;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,20 +25,19 @@ public class featureFileCollector {
             if (targetBranch == null ||
                     targetBranch.isBlank()) {
 
-                System.out.println(
-                        "TARGET BRANCH: "
-                                + targetBranch
-                );
-
-
-
                 targetBranch = "develop";
             }
+
+            System.out.println(
+                    "TARGET BRANCH: "
+                            + targetBranch
+            );
 
             Process process =
                     new ProcessBuilder(
                             "git",
                             "diff",
+                            "--diff-filter=AM",
                             "--name-only",
                             "origin/" + targetBranch + "...HEAD"
                     ).start();
@@ -52,16 +52,44 @@ public class featureFileCollector {
 
                 while ((line = reader.readLine()) != null) {
 
-                    if (line.endsWith(".feature")) {
+                    System.out.println(
+                            "MODIFIED FILE: "
+                                    + line
+                    );
 
-                        features.add(
-                                Path.of(line)
+                    if (!line.endsWith(".feature")) {
+                        continue;
+                    }
+
+                    Path feature =
+                            Path.of(line);
+
+                    if (Files.exists(feature)) {
+
+                        features.add(feature);
+                    } else {
+
+                        System.out.println(
+                                "IGNORADO (NO EXISTE): "
+                                        + feature
                         );
                     }
                 }
             }
 
             process.waitFor();
+
+            System.out.println(
+                    "FEATURES DETECTADAS: "
+                            + features.size()
+            );
+
+            features.forEach(path ->
+                    System.out.println(
+                            "FEATURE => "
+                                    + path.toAbsolutePath()
+                    )
+            );
 
         } catch (Exception e) {
 

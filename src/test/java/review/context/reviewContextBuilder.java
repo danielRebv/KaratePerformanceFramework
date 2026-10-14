@@ -20,7 +20,6 @@ public class reviewContextBuilder {
                 "BASE REF: " + targetBranch
         );
 
-        // Ejecución local
         if (branchName == null || branchName.isBlank()) {
 
             branchName =
