@@ -29,7 +29,7 @@ public class pullRequestReviewEngine {
                 new featureParser();
 
         List<featureDocument> features =
-                collector.collect()
+                collector.collect(context)
                         .stream()
                         .map(parser::parse)
                         .toList();
