@@ -4,6 +4,8 @@ on:
   pull_request:
     branches:
       - develop
+      - main
+      - release
 
 jobs:
 
@@ -13,6 +15,7 @@ jobs:
 
     permissions:
       contents: read
+      pull-requests: write
 
     steps:
 
@@ -31,22 +34,61 @@ jobs:
       - name: Grant Execute Permission
         run: chmod +x gradlew
 
-      - name: Compile
+      - name: Compile Framework
         run: ./gradlew testClasses
 
       - name: Execute PR Review Engine
+        id: review
+        continue-on-error: true
         run: ./gradlew pullRequestReview
 
-      - name: Execute New Test Cases
-        run: |
-          ./gradlew apiTest \
-          -Ptags=@TestCase=NEW
-
-      - name: Upload Reports
+      - name: Publish PR Comment
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/github-script@v7
         with:
-          name: karate-report
-          path: |
-            build/reports
-            build/karate-reports
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+
+            let body;
+
+            try {
+              body = fs.readFileSync(
+                'build/pr-review-report.md',
+                'utf8'
+              );
+            } catch (err) {
+              body =
+  # QA PR Review
+
+  #No fue posible generar el reporte markdown.
+
+  #Revisar logs del job qa-review.`;
+  }
+
+  await github.rest.issues.createComment({
+owner: context.repo.owner,
+repo: context.repo.repo,
+issue_number: context.issue.number,
+body: body
+});
+
+- name: Execute New Test Cases
+  if: steps.review.outcome == 'success'
+  run: |
+    ./gradlew apiTest \
+    -Ptags=@TestCase=NEW
+
+- name: Upload Reports
+  if: always()
+  uses: actions/upload-artifact@v4
+  with:
+    name: qa-review-artifacts
+    path: |
+      build/pr-review-report.md
+      build/reports
+      build/karate-reports
+
+- name: Fail Workflow When Review Failed
+  if: steps.review.outcome == 'failure'
+  run: exit 1
