@@ -8,6 +8,7 @@ import review.model.severity;
 import review.model.violation;
 import review.parser.featureFileCollector;
 import review.parser.featureParser;
+import review.report.markdownReportBuilder;
 import review.rules.*;
 
 import java.io.IOException;
@@ -72,12 +73,18 @@ public class pullRequestReviewEngine {
                         v.severity() == severity.WARNING)
                 .count();
 
+        reviewResult result =
+                new reviewResult(
+                        blockers == 0,
+                        blockers,
+                        warnings,
+                        violations
+                );
+
+        new markdownReportBuilder()
+                .build(result);
+
         // Resultado consolidado
-        return new reviewResult(
-                blockers == 0,
-                blockers,
-                warnings,
-                violations
-        );
+        return result;
     }
 }
