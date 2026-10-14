@@ -21,6 +21,10 @@ jobs:
 
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+
 
       - name: Setup Java 21
         uses: actions/setup-java@v4
@@ -88,6 +92,12 @@ body: body
       build/pr-review-report.md
       build/reports
       build/karate-reports
+      
+      - name: Debug Branches
+  run: |
+    echo "BASE=${{ github.base_ref }}"
+    echo "HEAD=${{ github.head_ref }}"
+    git branch -a
 
 - name: Fail Workflow When Review Failed
   if: steps.review.outcome == 'failure'

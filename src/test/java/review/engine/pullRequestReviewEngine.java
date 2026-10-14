@@ -29,7 +29,7 @@ public class pullRequestReviewEngine {
                 new featureParser();
 
         List<featureDocument> features =
-                collector.collect()
+                collector.collect(context)
                         .stream()
                         .map(parser::parse)
                         .toList();
@@ -80,6 +80,15 @@ public class pullRequestReviewEngine {
                         warnings,
                         violations
                 );
+
+        System.out.println("Features encontradas:");
+
+        features.forEach(feature ->
+                System.out.println(
+                        feature.path()
+                )
+        );
+
 
         new markdownReportBuilder()
                 .build(result);
